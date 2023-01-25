@@ -1,6 +1,6 @@
 require 'minitest/autorun'
 require 'sprockets'
-require 'sprockets/vue'
+require 'rails-vue-loader'
 require 'execjs'
 require "coffee-script"
 require 'sass'

@@ -15,9 +15,8 @@ Gem::Specification.new do |s|
   s.files = Dir["README.md", "MIT-LICENSE", "lib/**/*.rb"]
 
   s.add_dependency 'sprockets', '~> 2.2.3'
-  s.add_dependency 'activesupport'
-  s.add_dependency 'css_parser', '~> 1.3.6'
   s.add_dependency 'tilt', "~> 1.4.1"
+  s.add_dependency 'css_parser', '~> 1.3.6'
   s.add_development_dependency 'concurrent-ruby', '1.0.0'
   s.add_development_dependency 'public_suffix', '~> 1.5.3'
   s.add_development_dependency 'rb-inotify', '~> 0.9.6'

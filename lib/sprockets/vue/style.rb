@@ -1,51 +1,34 @@
 require 'css_parser'
+require 'tilt'
 
-module Sprockets::Vue
-  class Style
-    class << self
+module Sprockets
+  module Vue
+    # Compile Vue assets to stylesheet
+    class Style < Tilt::Template
+      self.default_mime_type = 'text/css'
+
       STYLE_REGEX = Utils.node_regex('style')
+
       STYLE_COMPILES = {
         'scss' => ->(x) { Sprockets::ScssProcessor.call(x)[:data] },
         'sass' => ->(x) { Sprockets::SassProcessor.call(x)[:data] },
         nil => ->(i) { i[:data] }
-      }
+      }.freeze
 
-      def call(input)
-        data = input[:data]
-        input[:cache].fetch([cache_key, input[:filename], data]) do
-          style = STYLE_REGEX.match(data)
-
-          if style
-            input[:data] = style[:content]
-            built_css = STYLE_COMPILES[style[:lang]].call(input)
-
-            if style[:scoped]
-              parser = CssParser::Parser.new
-              parser.load_string! built_css
-
-              uniq_selector = Utils.scope_key(File.basename(input[:filename]))
-
-              parser.each_rule_set do |rs|
-                rs.selectors.each do |s|
-                  s.sub!(/(\s|$)/, "[data-#{uniq_selector}] ")
-                end
-              end
-
-              built_css = parser.to_s
-            end
-
-            built_css
-          else
-            ''
-          end
-        end
+      def initialize(filename, &block)
+        @filename = filename
+        super
       end
 
-      def cache_key
-        [
-          self.name,
-          VERSION,
-        ].freeze
+      def prepare; end
+
+      def evaluate(_scope, _locals, &_block)
+        style = STYLE_REGEX.match(data)
+        if style
+          STYLE_COMPILES[style[:lang]].call({ data: style[:content] })
+        else
+          ''
+        end
       end
     end
   end
